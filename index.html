@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matatena Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Matatena Web</h1>
+    <div id="player1-board" class="board"></div>
+    <div id="player2-board" class="board"></div>
+    <button id="roll-dice">Roll Dice</button>
+    <p id="game-status"></p>
+
+    <script>
+        const player1Board = Array(3).fill(null).map(() => Array(3).fill(null));
+        const player2Board = Array(3).fill(null).map(() => Array(3).fill(null));
+        let currentPlayer = 1;
+
+        function renderBoard(board, elementId) {
+            const boardElement = document.getElementById(elementId);
+            boardElement.innerHTML = '';
+            board.forEach(row => {
+                row.forEach(cell => {
+                    const cellElement = document.createElement('div');
+                    cellElement.classList.add('cell');
+                    cellElement.innerText = cell !== null ? cell : '';
+                    boardElement.appendChild(cellElement);
+                });
+            });
+        }
+
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        function placeDice(board, dice) {
+            // Simple placement logic for the first available cell
+            for (let row = 0; row < board.length; row++) {
+                for (let col = 0; col < board[row].length; col++) {
+                    if (board[row][col] === null) {
+                        board[row][col] = dice;
+                        return;
+                    }
+                }
+            }
+        }
+
+        document.getElementById('roll-dice').addEventListener('click', () => {
+            const dice = rollDice();
+            if (currentPlayer === 1) {
+                placeDice(player1Board, dice);
+                renderBoard(player1Board, 'player1-board');
+                currentPlayer = 2;
+            } else {
+                placeDice(player2Board, dice);
+                renderBoard(player2Board, 'player2-board');
+                currentPlayer = 1;
+            }
+            document.getElementById('game-status').innerText = `Player ${currentPlayer}'s turn`;
+        });
+
+        renderBoard(player1Board, 'player1-board');
+        renderBoard(player2Board, 'player2-board');
+    </script>
+
+</body>
+</html>
